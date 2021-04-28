@@ -1,38 +1,55 @@
 import React, { useState } from 'react';
 import Board from './components/Board';
+import History from './components/History';
 import { calculateWinner } from './helpers';
 
 import './components/styles/root.css';
 
 function App() {
-  const [board, setBoard] = useState(Array(9).fill(null));
-  const [isXTurn, setisXTurn] = useState(true);
+  const [history, setHistory] = useState([
+    { board: Array(9).fill(null), isXTurn: true },
+  ]);
 
-  const winner = calculateWinner(board);
+  const [currentMove, setCurrentMove] = useState(0);
+
+  const current = history[currentMove];
+
+  const winner = calculateWinner(current.board);
   const message = winner
     ? `The Winner is: ${winner} !`
-    : `Next player is:  ${isXTurn ? 'X' : 'O'}`;
+    : `Next player is:  ${current.isXTurn ? 'X' : 'O'}`;
 
   const handleSquareClick = position => {
-    if (board[position] || winner) {
+    if (current.board[position] || winner) {
       return;
     }
-    setBoard(prev => {
-      return prev.map((arrayValue, index) => {
+    setHistory(prev => {
+      const last = prev[prev.length - 1];
+
+      const newBoard = last.board.map((arrayValue, index) => {
         if (index === position) {
-          return isXTurn ? 'X' : 'O';
+          return last.isXTurn ? 'X' : 'O';
         }
         return arrayValue;
       });
+      return prev.concat({ board: newBoard, isXTurn: !last.isXTurn });
     });
-    setisXTurn(prev => !prev);
+    setCurrentMove(prev => prev + 1);
+  };
+  const goToMove = move => {
+    setCurrentMove(move);
   };
 
   return (
     <div className="app ">
       <h1>Tic Tac Toe</h1>
       <h2>{message}</h2>
-      <Board board={board} handleSquareClick={handleSquareClick} />
+      <Board board={current.board} handleSquareClick={handleSquareClick} />
+      <History
+        history={history}
+        goToMove={goToMove}
+        currentMove={currentMove}
+      />
     </div>
   );
 }
