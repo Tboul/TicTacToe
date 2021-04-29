@@ -7,13 +7,25 @@ import React from 'react';
 const StatusMsg = ({ winner, current }) => {
   const gameOver = current.board.every(el => el != null);
   return (
-    <h2>
-      {winner && `The Winner is: ${winner} !`}
-      {!winner &&
-        !gameOver &&
-        `Next player is:  ${current.isXTurn ? 'X' : 'O'}`}
-      {!winner && gameOver && `Game Tied!`}
-    </h2>
+    <div className="status-message ">
+      {winner && (
+        <>
+          The Winner is:{' '}
+          <span className={winner === 'X' ? 'text-green' : 'text-orange'}>
+            {winner}
+          </span>
+        </>
+      )}
+      {!winner && !gameOver && (
+        <>
+          Next player is:{' '}
+          <span className={current.isXTurn ? 'text-green' : 'text-orang'}>
+            {current.isXTurn ? 'X' : 'O'}
+          </span>
+        </>
+      )}
+      {!winner && gameOver && <span className="text-orange">Game Tied! </span>}
+    </div>
   );
 };
 
