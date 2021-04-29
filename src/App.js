@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
 import Board from './components/Board';
 import History from './components/History';
+import StatusMsg from './components/StatusMsg';
 import { calculateWinner } from './helpers';
 
 import './components/styles/root.css';
 
 function App() {
-  const [history, setHistory] = useState([
-    { board: Array(9).fill(null), isXTurn: true },
-  ]);
+  const InitGame = [{ board: Array(9).fill(null), isXTurn: true }];
+  const [history, setHistory] = useState(InitGame);
 
   const [currentMove, setCurrentMove] = useState(0);
 
   const current = history[currentMove];
 
-  const winner = calculateWinner(current.board);
-  const message = winner
-    ? `The Winner is: ${winner} !`
-    : `Next player is:  ${current.isXTurn ? 'X' : 'O'}`;
+  const { winner, winLine } = calculateWinner(current.board);
 
   const handleSquareClick = position => {
     if (current.board[position] || winner) {
@@ -39,12 +36,22 @@ function App() {
   const goToMove = move => {
     setCurrentMove(move);
   };
-
+  const onNewGame = () => {
+    setHistory(InitGame);
+    setCurrentMove(0);
+  };
   return (
     <div className="app ">
       <h1>Tic Tac Toe</h1>
-      <h2>{message}</h2>
-      <Board board={current.board} handleSquareClick={handleSquareClick} />
+      <StatusMsg winner={winner} current={current} />
+      <Board
+        board={current.board}
+        handleSquareClick={handleSquareClick}
+        winLine={winLine}
+      />
+      <button type="button" onClick={onNewGame}>
+        New Game
+      </button>
       <History
         history={history}
         goToMove={goToMove}
